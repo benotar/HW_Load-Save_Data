@@ -87,4 +87,16 @@ public class DataBase : IPersistable
             _feedbacks = JsonSerializer.Deserialize<List<Feedback>>(reader.ReadToEnd());
         }
     }
+
+    public IEnumerable<Feedback> GetFeedbacksByUserName(string userName)
+    {
+        User? user = _users.FirstOrDefault(us => us.UserName.Equals(userName));
+
+        if (user is null)
+        {
+            throw new ArgumentException("User not found", nameof(userName));
+        }
+
+        return _feedbacks.Where(fb => fb.UserId.Equals(user.Id));
+    }
 }
