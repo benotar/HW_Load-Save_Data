@@ -1,8 +1,10 @@
 ﻿using HL_26_12_2023.Entities;
+using HL_26_12_2023.Interfaces;
+using System.Text.Json;
 
 namespace HL_26_12_2023;
 
-public class DataBase
+public class DataBase : IPersistable
 {
     private List<User> _users;
 
@@ -34,12 +36,12 @@ public class DataBase
 
     public void AddFeedback(Guid userId, string text, uint rating)
     {
-        if(!_users.Any(us => us.Id.Equals(userId)))
+        if (!_users.Any(us => us.Id.Equals(userId)))
         {
             throw new ArgumentException("User not found", nameof(userId));
         }
 
-        if(rating > 5)
+        if (rating > 5)
         {
             throw new ArgumentException("Rating out of range", nameof(rating));
         }
@@ -54,9 +56,35 @@ public class DataBase
 
     public void PrintAllUsers()
     {
-        foreach(var user in _users)
+        foreach (var user in _users)
         {
             Console.WriteLine(user);
+        }
+    }
+
+    public void SaveToFile()
+    {
+        using (var writer = new StreamWriter(_usersFileName))
+        {
+            writer.Write(JsonSerializer.Serialize(_users));
+        }
+
+        using (var writer = new StreamWriter(_feedbacksFileName))
+        {
+            writer.Write(JsonSerializer.Serialize(_feedbacks));
+        }
+    }
+
+    public void LoadToFile()
+    {
+        using (var reader = new StreamReader(_usersFileName))
+        {
+            _users = JsonSerializer.Deserialize<List<User>>(reader.ReadToEnd());
+        }
+
+        using (var reader = new StreamReader(_feedbacksFileName))
+        {
+            _feedbacks = JsonSerializer.Deserialize<List<Feedback>>(reader.ReadToEnd());
         }
     }
 }
