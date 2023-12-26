@@ -51,4 +51,12 @@ public class DataBase
             Rating = rating
         });
     }
+
+    public void PrintAllUsers()
+    {
+        foreach(var user in _users)
+        {
+            Console.WriteLine(user);
+        }
+    }
 }
