@@ -111,4 +111,27 @@ public class DataBase : IPersistable
 
         return _users.FirstOrDefault(us => us.Id.Equals(feedback.UserId))!;
     }
+
+    public double GetAverageRatingByUserName(string userName)
+    {
+        User? user = _users.FirstOrDefault(us => us.UserName.Equals(userName));
+
+        if (user is null)
+        {
+            throw new ArgumentException("User not found", nameof(userName));
+        }
+
+        uint allRating = 0;
+        int count = 0;
+        foreach (var fb in _feedbacks)
+        {
+            if (fb.UserId.Equals(user.Id))
+            {
+                allRating += fb.Rating;
+                count++;
+            }
+        }
+
+        return (double)allRating / count;
+    }
 }
