@@ -110,6 +110,8 @@ public class DataBase : IPersistable
         return _feedbacks.Where(fb => fb.UserId.Equals(user.Id));
     }
 
+    /*1. Получить пользователя по айди отзыва.
+    Метод принимает айди отзыва и возвращает пользователя-автора.*/
     public User GetUserByFeedbackID(Guid feedbackId)
     {
         Feedback? feedback = _feedbacks.FirstOrDefault(fb => fb.Id.Equals(feedbackId));
@@ -122,6 +124,41 @@ public class DataBase : IPersistable
         return _users.FirstOrDefault(us => us.Id.Equals(feedback.UserId))!;
     }
 
+    /*2. Удалить пользователя по айди + автоматически удалить все отзывы, которые он писал.*/
+    public void RemoveUserAndFeedbacksByUserID(Guid userId)
+    {
+        User? user = _users.FirstOrDefault(us => us.Id.Equals(userId));
+
+        if (user is null)
+        {
+            throw new ArgumentException("User not found", nameof(userId));
+        }
+
+        for (int i = 0; i < _feedbacks.Count; i++)
+        {
+            if (_feedbacks[i].UserId.Equals(userId))
+            {
+                _feedbacks.Remove(_feedbacks[i]);
+            }
+        }
+
+        _users.Remove(user);
+    }
+    
+    /* 3. Вернуть средний рейтинг отзыва.*/
+    public double GetAverageRating()
+    {
+        uint allRating = 0;
+
+        foreach (var fb in _feedbacks)
+        {
+            allRating += fb.Rating;
+        }
+
+        return (double)allRating / _feedbacks.Count;
+    }
+
+    /* 4. Вернуть средний рейтинг отзывов указанного пользователя.*/
     public double GetAverageRatingByUserName(string userName)
     {
         User? user = _users.FirstOrDefault(us => us.UserName.Equals(userName));
@@ -145,38 +182,18 @@ public class DataBase : IPersistable
         return (double)allRating / count;
     }
 
-    public void RemoveUserAndFeedbacksByUserID(Guid userId)
-    {
-        User? user = _users.FirstOrDefault(us => us.Id.Equals(userId));
+    /*  6*. Используя LINQ методы Join/GroupBy/GroupJoin, вывести следующие данные:
 
-        if (user is null)
-        {
-            throw new ArgumentException("User not found", nameof(userId));
-        }
+        ИМЯ ПОЛЬЗОВАТЕЛЯ 1:
+	        ОТЗЫВ 1 ПОЛЬЗОВАТЕЛЯ 1
+	        ОТЗЫВ 2 ПОЛЬЗОВАТЕЛЯ 1
+	        ОТЗЫВ 3 ПОЛЬЗОВАТЕЛЯ 1
 
-        for (int i = 0; i < _feedbacks.Count; i++)
-        {
-            if (_feedbacks[i].UserId.Equals(userId))
-            {
-                _feedbacks.Remove(_feedbacks[i]);
-            }
-        }
-
-        _users.Remove(user);
-    }
-
-    public double GetAverageRating()
-    {
-        uint allRating = 0;
-
-        foreach (var fb in _feedbacks)
-        {
-            allRating += fb.Rating;
-        }
-
-        return (double)allRating / _feedbacks.Count;
-    }
-
+        ИМЯ ПОЛЬЗОВАТЕЛЯ 2:
+	        ОТЗЫВ 1 ПОЛЬЗОВАТЕЛЯ 2
+	        ОТЗЫВ 2 ПОЛЬЗОВАТЕЛЯ 2
+	        ... 
+    */
     public void PrintAllFeedbacksOrderByUsers()
     {
         //var temp = from fb in _feedbacks
