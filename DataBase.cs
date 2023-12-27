@@ -60,6 +60,16 @@ public class DataBase : IPersistable
         {
             Console.WriteLine(user);
         }
+        Console.WriteLine();
+    }
+
+    public void PrintAllFeedbacks()
+    {
+        foreach(var fb in _feedbacks)
+        {
+            Console.WriteLine(fb);
+        }
+        Console.WriteLine();
     }
 
     public void SaveToFile()
@@ -133,5 +143,25 @@ public class DataBase : IPersistable
         }
 
         return (double)allRating / count;
+    }
+
+    public void RemoveUserAndFeedbacksByUserID(Guid userId)
+    {
+        User? user = _users.FirstOrDefault(us => us.Id.Equals(userId));
+
+        if(user is null)
+        {
+            throw new ArgumentException("User not found", nameof(userId));
+        }
+
+        for (int i = 0; i < _feedbacks.Count; i++)
+        {
+            if (_feedbacks[i].UserId.Equals(userId))
+            {
+                _feedbacks.Remove(_feedbacks[i]);
+            }
+        }
+
+        _users.Remove(user);
     }
 }
