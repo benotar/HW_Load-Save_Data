@@ -65,7 +65,7 @@ public class DataBase : IPersistable
 
     public void PrintAllFeedbacks()
     {
-        foreach(var fb in _feedbacks)
+        foreach (var fb in _feedbacks)
         {
             Console.WriteLine(fb);
         }
@@ -149,7 +149,7 @@ public class DataBase : IPersistable
     {
         User? user = _users.FirstOrDefault(us => us.Id.Equals(userId));
 
-        if(user is null)
+        if (user is null)
         {
             throw new ArgumentException("User not found", nameof(userId));
         }
@@ -175,5 +175,47 @@ public class DataBase : IPersistable
         }
 
         return (double)allRating / _feedbacks.Count;
+    }
+
+    public void PrintAllFeedbacksOrderByUsers()
+    {
+        //var temp = from fb in _feedbacks
+        //           join us in _users on fb.UserId equals us.Id
+        //           orderby us.Id
+        //           select new { fb.Text, us.UserName, us.Id };
+
+        var newFeedbacks = _feedbacks.Join(_users,
+            fb => fb.UserId,
+            us => us.Id,
+            (fb, us) => new { fb.Text, us.UserName, us.Id })
+            .GroupBy(us => us.UserName);
+
+        foreach (var group in newFeedbacks)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"User {group.Key}:");
+            Console.ResetColor();
+
+            int count = 1;
+
+            foreach (var item in group)
+            {
+                Console.Write($"\tFeedback {count}: ");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"{item.Text}");
+                Console.ResetColor();
+
+                Console.Write($", user id: ");
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"{item.Id}");
+                Console.ResetColor();
+
+                count++;
+            }
+
+            Console.WriteLine();
+        }
     }
 }

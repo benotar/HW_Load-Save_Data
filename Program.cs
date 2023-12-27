@@ -5,15 +5,18 @@ var database = new DataBase();
 
 database.LoadToFile();
 
-//foreach (var item in database.GetFeedbacksByUserName("benotar"))
-//{
-//    Console.WriteLine(item);
-//}
+foreach (var item in database.GetFeedbacksByUserName("benotar"))
+{
+    Console.WriteLine(item);
+}
 
-//User us = database.GetUserByFeedbackID(Guid.Parse("48a1c912-0e11-4731-a7ba-c0d282c15ad7"));
-//Console.WriteLine(us);
+Console.WriteLine("\n");
 
-//Console.WriteLine(database.GetAverageRatingByUserName("benotar"));
+User us = database.GetUserByFeedbackID(Guid.Parse("48a1c912-0e11-4731-a7ba-c0d282c15ad7"));
+Console.WriteLine($"User by id: {us}");
+
+Console.WriteLine();
+Console.WriteLine($"Average rating by benotar: {database.GetAverageRatingByUserName("benotar")}\n");
 
 database.PrintAllUsers();
 database.PrintAllFeedbacks();
@@ -25,4 +28,6 @@ database.PrintAllUsers();
 database.PrintAllFeedbacks();
 
 
-Console.WriteLine(database.GetAverageRating());
+Console.WriteLine($"Average rating: {database.GetAverageRating()}");
+Console.WriteLine();
+database.PrintAllFeedbacksOrderByUsers();
