@@ -164,4 +164,16 @@ public class DataBase : IPersistable
 
         _users.Remove(user);
     }
+
+    public double GetAverageRating()
+    {
+        uint allRating = 0;
+
+        foreach (var fb in _feedbacks)
+        {
+            allRating += fb.Rating;
+        }
+
+        return (double)allRating / _feedbacks.Count;
+    }
 }

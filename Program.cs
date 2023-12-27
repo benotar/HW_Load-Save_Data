@@ -23,3 +23,6 @@ Console.WriteLine();
 
 database.PrintAllUsers();
 database.PrintAllFeedbacks();
+
+
+Console.WriteLine(database.GetAverageRating());
