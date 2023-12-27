@@ -144,7 +144,7 @@ public class DataBase : IPersistable
 
         _users.Remove(user);
     }
-    
+
     /* 3. Вернуть средний рейтинг отзыва.*/
     public double GetAverageRating()
     {
@@ -180,6 +180,14 @@ public class DataBase : IPersistable
         }
 
         return (double)allRating / count;
+    }
+
+    /*5. Получить все отзывы, в которых есть запрещенные слова.*/
+    public IEnumerable<Feedback> GetFeedbacksWithBadWords()
+    {
+        var badWords = new List<string>() { "Python", "python", "I don`t love .NET", "C++", "c++", "Unity", "unity" };
+
+        return _feedbacks.Where(fb => badWords.Any(bw => fb.Text.Contains(bw)));
     }
 
     /*  6*. Используя LINQ методы Join/GroupBy/GroupJoin, вывести следующие данные:
